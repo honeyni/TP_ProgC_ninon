@@ -1,0 +1,29 @@
+#include <stdio.h>
+#include "liste.h"
+
+int main() {
+    struct liste_couleurs ma_liste;
+    init_liste(&ma_liste);
+
+    struct couleur couleurs[10] = {
+        {0xFF, 0x00, 0x00, 0xFF}, // rouge
+        {0x00, 0xFF, 0x00, 0xFF}, // vert
+        {0x00, 0x00, 0xFF, 0xFF}, // bleu
+        {0xFF, 0xFF, 0x00, 0xFF}, // jaune
+        {0x00, 0xFF, 0xFF, 0xFF}, // cyan
+        {0xFF, 0x00, 0xFF, 0xFF}, // magenta
+        {0x80, 0x80, 0x80, 0xFF}, // gris
+        {0xFF, 0x80, 0x00, 0xFF}, // orange
+        {0x80, 0x00, 0x80, 0xFF}, // violet
+        {0x00, 0x00, 0x00, 0xFF}  // noir
+    };
+
+    for (int i = 0; i < 10; i++) {
+        insertion(&couleurs[i], &ma_liste);
+    }
+
+    printf("Liste des couleurs :\n");
+    parcours(&ma_liste);
+
+    return 0;
+}
