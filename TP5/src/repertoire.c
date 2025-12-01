@@ -5,59 +5,54 @@
 #include <stdlib.h>
 #include "repertoire.h"
 
-void lire_dossier(const char *nom_dossier) {
-    DIR *dir;
-    struct dirent *entree;
+void lire_dossier_iteratif(const char *nom_dossier) {
+    // Pile de chemins à explorer
+    char pile[1000][1024];
+    int sommet = 0;
 
-    dir = opendir(nom_dossier);
-    if (dir == NULL) {
-        printf("Erreur : impossible d'ouvrir le dossier %s\n", nom_dossier);
-        return;
-    }
+    // On met le dossier initial dans la pile
+    strcpy(pile[sommet++], nom_dossier);
 
-    printf("Contenu du dossier %s :\n", nom_dossier);
+    printf("Parcours iteratif du dossier : %s\n\n", nom_dossier);
 
-    while ((entree = readdir(dir)) != NULL) {
-        printf("- %s\n", entree->d_name);
-    }
+    // Tant qu’il reste des dossiers à parcourir
+    while (sommet > 0) {
+        // Retirer un dossier de la pile
+        sommet--;
+        char dossier_actuel[1024];
+        strcpy(dossier_actuel, pile[sommet]);
 
-    closedir(dir);
-}
+        printf("Contenu de : %s\n", dossier_actuel);
 
-/* helper récursif, niveau sert juste pour l'indentation visuelle */
-static void lire_dossier_recursif_interne(const char *nom_dossier, int niveau) {
-    DIR *dir;
-    struct dirent *entree;
-    dir = opendir(nom_dossier);
-    if (dir == NULL) {
-        printf("Erreur : impossible d'ouvrir le dossier %s\n", nom_dossier);
-        return;
-    }
-
-    while ((entree = readdir(dir)) != NULL) {
-        if (strcmp(entree->d_name, ".") == 0 || strcmp(entree->d_name, "..") == 0) {
-            continue;  // évite boucle infinie
+        DIR *dir = opendir(dossier_actuel);
+        if (!dir) {
+            printf("  [Impossible d'ouvrir]\n\n");
+            continue;
         }
 
-        char chemin[1024];
-        snprintf(chemin, sizeof(chemin), "%s/%s", nom_dossier, entree->d_name);
+        struct dirent *entree;
 
-        for (int i = 0; i < niveau; i++) {
-            printf("  ");  // indentation
-        }
-        printf("- %s\n", entree->d_name);
+        while ((entree = readdir(dir)) != NULL) {
+            // ignorer . et ..
+            if (strcmp(entree->d_name, ".") == 0 ||
+                strcmp(entree->d_name, "..") == 0) {
+                continue;
+            }
 
-        struct stat st;
-        if (stat(chemin, &st) == 0 && S_ISDIR(st.st_mode)) {
-            lire_dossier_recursif_interne(chemin, niveau + 1);
+            char chemin[1024];
+            snprintf(chemin, sizeof(chemin), "%s/%s",
+                     dossier_actuel, entree->d_name);
+
+            printf("  - %s\n", entree->d_name);
+
+            // Vérifier si c’est un répertoire → on l’ajoute dans la pile
+            struct stat st;
+            if (stat(chemin, &st) == 0 && S_ISDIR(st.st_mode)) {
+                strcpy(pile[sommet++], chemin);
+            }
         }
+
+        printf("\n");
+        closedir(dir);
     }
-
-    closedir(dir);
 }
-
-void lire_dossier_recursif(const char *nom_dossier) {
-    printf("Parcours recursif de %s :\n", nom_dossier);
-    lire_dossier_recursif_interne(nom_dossier, 0);
-}
-
