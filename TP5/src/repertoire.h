@@ -3,5 +3,6 @@
 
 void lire_dossier(const char *nom_dossier);
 void lire_dossier_recursif(const char *nom_dossier);
+void lire_dossier_iteratif(const char *nom_dossier);
 
 #endif
