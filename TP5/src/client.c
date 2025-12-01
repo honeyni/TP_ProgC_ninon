@@ -99,4 +99,7 @@ int main()
   }
 
   close(socketfd);
+
+  inet_pton(AF_INET, "10.0.16.5", &serv_addr.sin_addr);
+
 }
