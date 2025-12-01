@@ -1,0 +1,8 @@
+void envoie_operateur_numeros(int sock, char op, int num1, int num2) {
+    char message[256];
+
+    // Format demandé : calcule : + 23 45
+    snprintf(message, sizeof(message), "calcule : %c %d %d", op, num1, num2);
+
+    send(sock, message, strlen(message), 0);
+}
