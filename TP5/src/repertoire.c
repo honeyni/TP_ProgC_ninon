@@ -1,5 +1,8 @@
 #include <stdio.h>
 #include <dirent.h>
+#include <string.h>
+#include <sys/stat.h>
+#include <stdlib.h>
 #include "repertoire.h"
 
 void lire_dossier(const char *nom_dossier) {
@@ -19,4 +22,41 @@ void lire_dossier(const char *nom_dossier) {
     }
 
     closedir(dir);
+}
+
+/* helper récursif, niveau sert juste pour l'indentation visuelle */
+static void lire_dossier_recursif_interne(const char *nom_dossier, int niveau) {
+    DIR *dir;
+    struct dirent *entree;
+    dir = opendir(nnom_dossier);
+    if (dir == NULL) {
+        printf("Erreur : impossible d'ouvrir le dossier %s\n", nom_dossier);
+        return;
+    }
+
+    while ((entree = readdir(dir)) != NULL) {
+        if (strcmp(entree->d_name, ".") == 0 || strcmp(entree->d_name, "..") == 0) {
+            continue;  // évite boucle infinie
+        }
+
+        char chemin[1024];
+        snprintf(chemin, sizeof(chemin), "%s/%s", nom_dossier, entree->d_name);
+
+        for (int i = 0; i < niveau; i++) {
+            printf("  ");  // indentation
+        }
+        printf("- %s\n", entree->d_name);
+
+        struct stat st;
+        if (stat(chemin, &st) == 0 && S_ISDIR(st.st_mode)) {
+            lire_dossier_recursif_interne(chemin, niveau + 1);
+        }
+    }
+
+    closedir(dir);
+}
+
+void lire_dossier_recursif(const char *nom_dossier) {
+    printf("Parcours recursif de %s :\n", nom_dossier);
+    lire_dossier_recursif_interne(nom_dossier, 0);
 }
