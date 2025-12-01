@@ -124,7 +124,6 @@ void gerer_client(int client_socket_fd)
 
 int main()
 {
-
   int bind_status;                // Statut de la liaison
   struct sockaddr_in server_addr; // Structure pour l'adresse du serveur
   int option = 1;                 // Option pour setsockopt
@@ -178,6 +177,8 @@ int main()
 
     if (client_socket_fd < 0)
     {
+      adresse.sin_addr.s_addr = INADDR_ANY;
+
       perror("accept");
       continue; // Continuer à attendre d'autres connexions en cas d'erreur
     }
