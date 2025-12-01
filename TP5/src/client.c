@@ -64,18 +64,32 @@ int envoie_recois_message(int socketfd)
 
 int main()
 {
-  int socketfd;
+  int sock = 0;
+struct sockaddr_in serv_addr;
+char buffer[1024] = {0};
 
-  struct sockaddr_in server_addr;
+sock = socket(AF_INET, SOCK_STREAM, 0);
 
-  /*
-   * Creation d'une socket
-   */
-  socketfd = socket(AF_INET, SOCK_STREAM, 0);
-  if (socketfd < 0)
-  {
-    perror("socket");
-    exit(EXIT_FAILURE);
+serv_addr.sin_family = AF_INET;
+serv_addr.sin_port = htons(8080);
+
+// ⚠️ IP du serveur (modifie si nécessaire)
+inet_pton(AF_INET, "10.0.16.5", &serv_addr.sin_addr);
+
+connect(sock, (struct sockaddr *)&serv_addr, sizeof(serv_addr));
+
+printf("Entrez une opération (format : + 23 45) : ");
+
+char op;
+int n1, n2;
+scanf(" %c %d %d", &op, &n1, &n2);
+
+envoie_operateur_numeros(sock, op, n1, n2);
+
+read(sock, buffer, 1024);
+printf("Réponse du serveur : %s\n", buffer);
+
+close(sock);
   }
 
   // détails du serveur (adresse et port)
