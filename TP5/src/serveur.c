@@ -62,6 +62,39 @@ int recois_envoie_message(int client_socket_fd, char *data)
   return (EXIT_SUCCESS);
 }
 
+void recois_numeros_calcule(int socket_client, char *message) {
+    char op;
+    int num1, num2;
+    int resultat;
+
+    sscanf(message, "calcule : %c %d %d", &op, &num1, &num2);
+
+    switch (op) {
+        case '+': resultat = num1 + num2; break;
+        case '-': resultat = num1 - num2; break;
+        case '*': resultat = num1 * num2; break;
+        case '/': 
+            if (num2 == 0) {
+                send(socket_client, "Erreur : division par 0", 25, 0);
+                return;
+            }
+            resultat = num1 / num2;
+            break;
+        case '%':
+            resultat = num1 % num2;
+            break;
+
+        default:
+            send(socket_client, "Erreur : opérateur inconnu", 27, 0);
+            return;
+    }
+
+    char reponse[256];
+    snprintf(reponse, sizeof(reponse), "calcule : %d", resultat);
+
+    send(socket_client, reponse, strlen(reponse), 0);
+}
+
 /**
  * Gestionnaire de signal pour Ctrl+C (SIGINT).
  * @param signal : Le signal capturé (doit être SIGINT pour Ctrl+C).
