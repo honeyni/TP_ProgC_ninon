@@ -149,6 +149,16 @@ void gerer_client(int client_socket_fd)
 
     recois_envoie_message(client_socket_fd, data);
   }
+  char buffer[1024] = {0};
+
+read(socket_client, buffer, 1024);
+
+if (strncmp(buffer, "calcule :", 9) == 0) {
+    recois_numeros_calcule(socket_client, buffer);
+} else {
+    // Ancienne fonctionnalité : echo ou message texte
+    printf("Message reçu : %s\n", buffer);
+    send(socket_client, "Message non reconnu", 20, 0);
 }
 
 /**
