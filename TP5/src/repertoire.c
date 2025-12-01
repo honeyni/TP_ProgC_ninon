@@ -28,7 +28,7 @@ void lire_dossier(const char *nom_dossier) {
 static void lire_dossier_recursif_interne(const char *nom_dossier, int niveau) {
     DIR *dir;
     struct dirent *entree;
-    dir = opendir(nnom_dossier);
+    dir = opendir(nom_dossier);
     if (dir == NULL) {
         printf("Erreur : impossible d'ouvrir le dossier %s\n", nom_dossier);
         return;
@@ -60,3 +60,4 @@ void lire_dossier_recursif(const char *nom_dossier) {
     printf("Parcours recursif de %s :\n", nom_dossier);
     lire_dossier_recursif_interne(nom_dossier, 0);
 }
+
